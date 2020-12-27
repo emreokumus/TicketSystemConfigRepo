@@ -12,3 +12,5 @@ accountservice:
     password: cassandra
     keyspace:
       name: ticketsystem
+
+emre
