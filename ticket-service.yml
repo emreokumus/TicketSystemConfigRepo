@@ -22,7 +22,7 @@ spring:
     username: eokumus
     password: eokumus
     host: localhost
-    port: 
+    port: 5672
   cloud:
     stream:
       bindings:
