@@ -18,6 +18,16 @@ spring:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     hibernate:
       ddl-auto: update
+  rabbitmq:
+    username: eokumus
+    password: eokumus
+    host: localhost
+    port: 
+  cloud:
+    stream:
+      bindings:
+        output: #kuyruğa publish edecek olan
+          destination: ticketnotificationqueue
 
 management:
   endpoints:
