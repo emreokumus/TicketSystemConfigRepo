@@ -3,17 +3,23 @@ server:
 
 spring:
   zipkin:
-    base-url: http://localhost:9411/
+    base-url: ${ZIPKIN_SERVER_URL:http://localhost:9411/}
     enabled: true
   boot:
     admin:
       client:
-        url: http://localhost:8085 #admin server port
+        url: ${SPRING_BOOT_ADMIN_SERVER_URL:http://localhost:8085}  #admin server port
   
 eureka:
+  server:
+    eviction-interval-timer-in-ms: 1000
+  instance:
+    hostname: ${EUREKA_SERVER_HOST:localhost}
   client:
-    fetchRegistry: false
-    registerWithEureka: false
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
 
 management: #production ortamında buna dıkkat etmek lazım
   endpoints:
