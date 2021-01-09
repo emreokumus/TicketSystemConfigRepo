@@ -1,0 +1,47 @@
+server:
+  port: 8084
+
+eureka:
+  client:
+    instance:
+      hostname: ${EUREKA_SERVER_HOST:localhost}
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/} # Api Gateway Eureka sayesinde servislere erişecek.
+
+spring:
+  cloud:
+    gateway:
+      routes: #En önemli uğraşacağımız yer routing yaptığımız kısım servislerimizin dışarıya açılan kapısı burasıdır. İçerisinde bir takım mappingler var.
+        - id: account-service #account-service id'li servisimin konfigürasyonu olduğunu belirtmek için yazdım.
+          uri: lb://ACCOUNT-SERVICE #Eureka server üzerindeki load balancer ile ACCOUNT-SERVİCE ismindeki servisi ararım.
+          predicates: #gelen istekler bu path'e geliyor ise yani /account/** ile başlayan tüm istekler account-service'imi ilgilendiriyor diyorum
+            - Path=/account/**
+          filters:
+            # /account/** path'ine gelen tüm istekleri bu path'i değiştirmeden account-service'e gitsin yönlendirme yaparım.
+            # Burada request üzerine bir şeyler ekleyip çıkarabilirim. Buraya isteğim kadar filter yazabilirim.
+            # Ek olarak filtrelerimi konfigürasyon class'ı olarakta yazabilirim.
+            - RewritePath=/(?<segment>.*), /$\{segment} 
+            - name: Hystrix
+              args:
+                name: account-service #Bu name dashboard da gözükmesi için koymasakta olur.
+                #Bu name için gelen isteklerin hepsi hata durumuyla karşılaşıyorsa forwardladığım api'a gider.
+                fallbackUri: forward:/fallback/account
+
+        - id: ticket-service
+          uri: lb://TICKET-SERVICE
+          predicates:
+            - Path=/ticket/** # Bu path'e gelen isteklerin hepsi load balancer ile Eureka üzerinden TICKET-SERVICE'e gider
+          filters:
+            #Path kısmında "api/ticket/**"" gibi bir path verseydim RewritePath kısmında o başındaki api kısmını silmem gerekirdi.
+            #Benim service'im  sadece "/ticket/**" şeklinde ki adresleri biliyor.
+            - RewritePath=/(?<segment>.*), /$\{segment} #path'de değişiklik yapmadan yönlendiririm.
+            - name: Hystrix
+              args:
+                name: ticket-service
+                fallbackUri: forward:/fallback/ticket
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
