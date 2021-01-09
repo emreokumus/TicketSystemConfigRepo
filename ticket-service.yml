@@ -34,7 +34,7 @@ spring:
   boot:
     admin:
       client:
-        url: http://localhost:8084 #admin server port
+        url: http://localhost:8085 #admin server port
 
 management: #production ortamında buna dıkkat etmek lazım
   endpoints:

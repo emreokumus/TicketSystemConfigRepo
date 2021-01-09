@@ -12,7 +12,7 @@ spring:
   boot:
     admin:
       client:
-        url: http://localhost:8084 #admin server port
+        url: http://localhost:8085 #admin server port
   cloud:
     gateway:
       routes: #En önemli uğraşacağımız yer routing yaptığımız kısım servislerimizin dışarıya açılan kapısı burasıdır. İçerisinde bir takım mappingler var.
